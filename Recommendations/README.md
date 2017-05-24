@@ -1,3 +1,3 @@
 # Recommendation Scripts
 
-Code examples from my experience at Twitch. 
+Code samples for performing user-based collaborative filtering in different languages. 
