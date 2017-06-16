@@ -4,8 +4,8 @@ val games = sqlContext.read
     .option("inferSchema", "true")  
     .load("/Users/bgweber/spark/Games.csv")
     
-games.registerTempTable("games"
-)
+games.registerTempTable("games")  
+
 val result = sqlContext.sql("""
 with users as (
     select _c0 as User_ID, sum(1) as NumGames 
@@ -18,10 +18,10 @@ with users as (
     join users u
       on g._c0 = u.User_ID
 )
-select u.User_ID, v.Game_ID, avg(Tanimoto) as GameWeight
+select u.User_ID, v.Game_ID, SUM(Tanimoto) as GameWeight
 from ( 
     select u.User_ID, v.User_ID as Other_User_ID,
-        count(distinct u.Game_ID)/(u.NumGames + v.NumGames - count(distinct u.Game_ID)) as Tanimoto
+        count(u.Game_ID)/(u.NumGames + v.NumGames - count(u.Game_ID)) as Tanimoto
     from purchases u
     Join purchases v
         on u.Game_ID = v.Game_ID 
@@ -32,7 +32,6 @@ Join purchases v
     on Other_User_ID = v.User_ID
 group by u.User_ID, v.Game_ID
 order by GameWeight desc
-limit 5
 """)
 
 result.show(5)
